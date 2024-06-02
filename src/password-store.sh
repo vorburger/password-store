@@ -388,7 +388,9 @@ cmd_show() {
 			echo "$pass" | $BASE64 -d
 		else
 			[[ $selected_line =~ ^[0-9]+$ ]] || die "Clip location '$selected_line' is not a number."
-			pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile" | tail -n +${selected_line} | head -n 1)" || exit $?
+			pass="$($GPG -d "${GPG_OPTS[@]}" "$passfile")" || exit $?
+			pass="$(echo "$pass" | tail -n +"${selected_line}")" || exit $?
+			pass="$(echo "$pass" | head -n 1)" || exit $?
 			[[ -n $pass ]] || die "There is no password to put on the clipboard at line ${selected_line}."
 			if [[ $clip -eq 1 ]]; then
 				clip "$pass" "$path"
